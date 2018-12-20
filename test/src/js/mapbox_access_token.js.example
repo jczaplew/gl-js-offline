@@ -1,0 +1,3 @@
+mapbox_api_key = ''
+
+export default mapbox_api_key
