@@ -1,18 +1,9 @@
-// @flow
-
 import { getTiles } from './get_tiles'
 import { deletePack } from './delete_pack'
 import TileDownloadManager from './TileDownloadManager'
 import OfflineRasterTileSource from '../source/offline_raster_tile_source'
-
+import defaults from '../defaults'
 import { getArrayBuffer } from 'mapbox-gl/src/util/ajax'
-
-const defaults = {
-  dbname: 'tile-cache',
-  dbversion: 1.0,
-  dbsize: ((1024 * 1024) * 10),
-  debug: false
-}
 
 class OfflineManager {
   constructor(map, props, callback) {

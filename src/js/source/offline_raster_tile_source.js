@@ -1,5 +1,3 @@
-// @flow
-
 import {extend, pick } from 'mapbox-gl/src/util/util'
 import { getImage, ResourceType } from 'mapbox-gl/src/util/ajax'
 import {Event, ErrorEvent, Evented} from 'mapbox-gl/src/util/evented'
@@ -7,7 +5,7 @@ import loadTileJSON from 'mapbox-gl/src/source/load_tilejson'
 import { normalizeTileURL } from 'mapbox-gl/src/util/mapbox'
 import TileBounds from 'mapbox-gl/src/source/tile_bounds'
 import Texture from 'mapbox-gl/src/render/texture'
-
+import defaults from '../defaults'
 
 class OfflineRasterTileSource extends Evented {
     type: 'offline-raster';
@@ -189,9 +187,9 @@ class OfflineRasterTileSource extends Evented {
     }
 
     getArrayBufferLocal(tile, callback) {
-      const open = indexedDB.open(this._options.dbname, this._options.dbversion);
+      const open = indexedDB.open(this._options.dbname || defaults.dbname, this._options.dbversion || defaults.dbversion);
       open.onupgradeneeded = () => {
-        indexedDB.deleteDatabase(this._options.dbname)
+        indexedDB.deleteDatabase(this._options.dbname || defaults.dbname)
         return callback(null)
       }
       open.onsuccess = () => {
@@ -230,7 +228,7 @@ class OfflineRasterTileSource extends Evented {
       };
       open.onerror = () => {
         if (this._options.debug) {
-          console.error(`Could not open database ${this._options.dbname} (version ${this._options.dbversion})`)
+          console.error(`Could not open database ${this._options.dbname || defaults.dbname} (version ${this._options.dbversion || defaults.dbversion})`)
         }
         callback('Could not open db')
       }
