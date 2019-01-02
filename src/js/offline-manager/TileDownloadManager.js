@@ -2,12 +2,11 @@
 
 import TileDownloader from './TileDownloader'
 import { getJSON } from 'mapbox-gl/src/util/ajax'
-import { normalizeSourceURL} from 'mapbox-gl/src/util/mapbox'
+import { normalizeSourceURL } from 'mapbox-gl/src/util/mapbox'
 import config from 'mapbox-gl/src/util/config'
 
 class TileDownloadManager {
   constructor(db, params, progressCallback, errorCallback, done) {
-    //console.log('TileDownloadManager:constructor')
     this.db = db
     this.sources = []
     this.params = params
@@ -26,6 +25,7 @@ class TileDownloadManager {
           })
           resolve()
         } else if (params.style.sources[source].url) {
+          // TODO: need to get the access token from elsewhere
           let jsonURL = (params.style.sources[source].url.indexOf('http') > -1 || params.style.sources[source].url.indexOf('mapbox') > -1) ? normalizeSourceURL(params.style.sources[source].url, config.accessToken) : params.style.sources[source].url
           getJSON({ url: jsonURL }, (error, data) => {
             this.sources.push({

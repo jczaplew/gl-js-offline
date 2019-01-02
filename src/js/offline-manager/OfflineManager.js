@@ -29,12 +29,22 @@ class OfflineManager {
 
       let store = this.db.createObjectStore('tiles', { keyPath: 'tile_id' })
       let idx = store.createIndex('tilecache_cache_idx', 'tile_id', { unique: false })
-      callback()
+      this.addSources(map, callback)
     }
     open.onsuccess = (event) => {
       if (this.db) return
       this.db = event.target.result
+      this.addSources(map, callback)
     }
+    open.onerror = (error) => {
+      if (this.options.debug) {
+        console.error('Could not open or create database - ', error.target.error)
+      }
+    }
+
+  }
+
+  addSources(map, callback) {
     // Add the offline raster tile source
     map.addSourceType('offline-raster', OfflineRasterTileSource, () => {
       callback()
@@ -114,6 +124,13 @@ class OfflineManager {
     }
   }
 
+  // get the number of tiles needed for a given cache
+  nTiles(params) {
+    return Object.keys(params.style.sources).map(source => {
+      return getTiles(params.bounds, params.minZoom, ((params.style.sources[source].tileSize < 512) ? (params.maxZoom + 1) : params.maxZoom)).length
+    }).reduce((a, b) => { return a + b }, 0)
+  }
+
   // Estimate the size of a cache
   estimateCache(params) {
     const estimates = {
@@ -169,12 +186,16 @@ class OfflineManager {
 
     let store = transaction.objectStore('caches')
     store.onerror = event => {
-      console.log('ERROR ACQUIRING STORE - ', event)
+      if (this.options.debug) {
+        console.error('Could not create a new transaction on the "caches" objectStore', event)
+      }
     }
     let add = store.put(src)
 
     add.onerror = event => {
-      console.log('ERROR ADDING CACHE - ', event)
+      if (this.options.debug) {
+        console.error('Could not write to the "caches" objectStore', event)
+      }
     }
 
     let modifiedSources = {}
