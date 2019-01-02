@@ -1,6 +1,6 @@
 {
   "name": "mapbox-gl-js-offline",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "Add offline functionality to Mapbox GL JS",
   "main": "index.js",
   "scripts": {
@@ -18,7 +18,9 @@
   },
   "devDependencies": {
     "@babel/core": "^7.2.2",
+    "@mapbox/mapbox-gl-draw": "^1.1.1",
     "babel-loader": "^8.0.4",
+    "mapbox-gl-draw-rectangle-mode": "^1.0.4",
     "remove-flow-types-loader": "^1.1.0",
     "uglifyjs-webpack-plugin": "^2.0.1",
     "webpack": "^4.28.0",
