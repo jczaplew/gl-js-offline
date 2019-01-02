@@ -101,13 +101,12 @@ class TileDownloader {
         }
 
         let store = transaction.objectStore('tiles')
-
         let add = store.put({
           'tile_id': `${tile[0]}|${tile[1]}|${tile[2]}|${this.source.name}`,
           'cache': this.params.name,
           'expires': response.expires,
           'cacheControl': response.cacheControl,
-          'data': response.data,
+          'data': response.data || response, // if it is a raster tile there is no data property
         })
 
         add.onerror = function(error) {
