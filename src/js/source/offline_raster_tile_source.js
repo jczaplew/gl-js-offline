@@ -1,3 +1,5 @@
+// @flow
+
 import {extend, pick } from 'mapbox-gl/src/util/util'
 import { getImage, ResourceType } from 'mapbox-gl/src/util/ajax'
 import {Event, ErrorEvent, Evented} from 'mapbox-gl/src/util/evented'

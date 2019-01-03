@@ -1,13 +1,13 @@
 // @flow
 
-const {DEMData} = require('../data/dem_data');
+import { DEMData } from 'mapbox-gl/src/data/dem_data'
 
-import type Actor from '../util/actor';
+import type Actor from 'mapbox-gl/src/util/actor'
 import type {
     WorkerDEMTileParameters,
     WorkerDEMTileCallback,
     TileParameters
-} from './worker_source';
+} from 'mapbox-gl/src/source/worker_source'
 
 
 class OfflineRasterDEMTileWorkerSource {

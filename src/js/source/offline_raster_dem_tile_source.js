@@ -1,22 +1,27 @@
 // @flow
 
-const ajax = require('../util/ajax');
-const util = require('../util/util');
-const {Evented} = require('../util/evented');
-const normalizeURL = require('../util/mapbox').normalizeTileURL;
-const browser = require('../util/browser');
-const {OverscaledTileID} = require('./tile_id');
-const RasterTileSource = require('./raster_tile_source');
+import {extend } from 'mapbox-gl/src/util/util'
+import { getImage, getArrayBuffer, ResourceType } from 'mapbox-gl/src/util/ajax'
+import {Event, ErrorEvent, Evented} from 'mapbox-gl/src/util/evented'
+import loadTileJSON from 'mapbox-gl/src/source/load_tilejson'
+import { normalizeTileURL } from 'mapbox-gl/src/util/mapbox'
+import TileBounds from 'mapbox-gl/src/source/tile_bounds'
+import Texture from 'mapbox-gl/src/render/texture'
+import defaults from '../defaults'
 
-import type {Source} from './source';
-import type Dispatcher from '../util/dispatcher';
-import type Tile from './tile';
-import type {Callback} from '../types/callback';
+import browser from 'mapbox-gl/src/util/browser'
+import { OverscaledTileID } from 'mapbox-gl/src/source/tile_id'
+import RasterTileSource from 'mapbox-gl/src/source/raster_tile_source'
+
+import type { Source } from 'mapbox-gl/src/source/source'
+import type Dispatcher from 'mapbox-gl/src/util/dispatcher'
+import type Tile from 'mapbox-gl/src/source/tile'
+import type { Callback } from 'mapbox-gl/src/types/callback'
 
 
  function loadImageXHR(params, callback) {
-   ajax.getImage()
-   const xhr = ajax.getArrayBuffer(params.request, (err, response) => {
+   getImage()
+   const xhr = getArrayBuffer(params.request, (err, response) => {
        if (err) {
            callback(err);
        } else if (response) {
@@ -86,7 +91,7 @@ function getArrayBufferLocal(tile, callback: Callback<{data: ArrayBuffer, cacheC
   }
 };
 
-function getImage(params, callback) {
+function getImageLocal(params, callback) {
     getArrayBufferLocal({
       x: params.tileID.canonical.x,
       y: params.tileID.canonical.y,
@@ -95,7 +100,7 @@ function getImage(params, callback) {
       source: params.source
     }, (err, response) => {
       if (err || !response || !response.data) {
-        return ajax.getImage(params.request, callback)
+        return getImage(params.request, callback)
         //return loadImageXHR(params, callback)
       }
 
@@ -124,7 +129,7 @@ class OfflineRasterDEMTileSource extends RasterTileSource implements Source {
         super(id, options, dispatcher, eventedParent);
         this.type = 'offline-raster-dem';
         this.maxzoom = 22;
-        this._options = util.extend({}, options);
+        this._options = extend({}, options);
         this.encoding = options.encoding || "mapbox";
     }
 
@@ -140,9 +145,9 @@ class OfflineRasterDEMTileSource extends RasterTileSource implements Source {
     }
 
     loadTile(tile: Tile, callback: Callback<void>) {
-        const url = normalizeURL(tile.tileID.canonical.url(this.tiles, this.scheme), this.url, this.tileSize);
+        const url = normalizeTileURL(tile.tileID.canonical.url(this.tiles, this.scheme), this.url, this.tileSize);
         const params = {
-            request: this.map._transformRequest(url, ajax.ResourceType.Tile),
+            request: this.map._transformRequest(url, ResourceType.Tile),
           //  request: url,
             uid: tile.uid,
             tileID: tile.tileID,
@@ -150,7 +155,7 @@ class OfflineRasterDEMTileSource extends RasterTileSource implements Source {
             source: this.id,
         };
 
-        tile.request = getImage(params, imageLoaded.bind(this));
+        tile.request = getImageLocal(params, imageLoaded.bind(this));
 
         tile.neighboringTiles = this._getNeighboringTiles(tile.tileID);
         function imageLoaded(err, img) {
@@ -243,4 +248,4 @@ class OfflineRasterDEMTileSource extends RasterTileSource implements Source {
 
 }
 
-module.exports = OfflineRasterDEMTileSource;
+export default OfflineRasterDEMTileSource

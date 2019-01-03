@@ -1,23 +1,28 @@
 // @flow
 
-const ajax = require('../util/ajax');
-const vt = require('@mapbox/vector-tile');
-const Protobuf = require('pbf');
-const WorkerTile = require('./worker_tile');
-const util = require('../util/util');
-const perf = require('../util/performance');
+import { getArrayBuffer } from 'mapbox-gl/src/util/ajax'
+import vt from '@mapbox/vector-tile'
+import Protobuf from 'pbf'
+import WorkerTile from 'mapbox-gl/src/source/worker_tile'
+import { extend } from 'mapbox-gl/src/util/util'
+import { getEntriesByName } from 'mapbox-gl/src/util/performance'
+//const vt = require('@mapbox/vector-tile')
+//const Protobuf = require('pbf');
+//const WorkerTile = require('./worker_tile');
+//const util = require('../util/util');
+//const perf = require('../util/performance');
 
 import type {
     WorkerSource,
     WorkerTileParameters,
     WorkerTileCallback,
     TileParameters
-} from '../source/worker_source';
+} from 'mapbox-gl/src/source/worker_source'
 
-import type {PerformanceResourceTiming} from '../types/performance_resource_timing';
-import type Actor from '../util/actor';
-import type StyleLayerIndex from '../style/style_layer_index';
-import type {Callback} from '../types/callback';
+import type { PerformanceResourceTiming } from 'mapbox-gl/src/types/performance_resource_timing'
+import type Actor from 'mapbox-gl/src/util/actor'
+import type StyleLayerIndex from 'mapbox-gl/src/style/style_layer_index'
+import type { Callback } from 'mapbox-gl/src/types/callback'
 
 export type LoadVectorTileResult = {
     vectorTile: VectorTile;
@@ -42,7 +47,7 @@ export type LoadVectorData = (params: WorkerTileParameters, callback: LoadVector
  * @private
  */
  function loadVectorTileXHR(params: WorkerTileParameters, callback: LoadVectorDataCallback) {
-   const xhr = ajax.getArrayBuffer(params.request, (err, response) => {
+   const xhr = getArrayBuffer(params.request, (err, response) => {
        if (err) {
            callback(err);
        } else if (response) {
@@ -177,7 +182,7 @@ class OfflineVectorTileWorkerSource implements WorkerSource {
             if (response.cacheControl) cacheControl.cacheControl = response.cacheControl;
             const resourceTiming = {};
             if (params.request && params.request.collectResourceTiming) {
-                const resourceTimingData = perf.getEntriesByName(params.request.url);
+                const resourceTimingData = getEntriesByName(params.request.url);
                 // it's necessary to eval the result of getEntriesByName() here via parse/stringify
                 // late evaluation in the main thread causes TypeError: illegal invocation
                 if (resourceTimingData)
@@ -189,7 +194,7 @@ class OfflineVectorTileWorkerSource implements WorkerSource {
                 if (err || !result) return callback(err);
 
                 // Transferring a copy of rawTileData because the worker needs to retain its copy.
-                callback(null, util.extend({rawTileData: rawTileData.slice(0)}, result, cacheControl, resourceTiming));
+                callback(null, extend({rawTileData: rawTileData.slice(0)}, result, cacheControl, resourceTiming));
             });
 
             this.loaded = this.loaded || {};

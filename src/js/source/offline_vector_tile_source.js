@@ -1,19 +1,19 @@
 // @flow
+import { Event, ErrorEvent, Evented } from 'mapbox-gl/src/util/evented'
+import { extend } from 'mapbox-gl/src/util/util'
+import loadTileJSON from 'mapbox-gl/src/source/load_tilejson'
+import { normalizeTileURL } from 'mapbox-gl/src/util/mapbox'
+import TileBounds from 'mapbox-gl/src/source/tile_bounds'
 
-const {Event, ErrorEvent, Evented} = require('../util/evented');
-const util = require('../util/util');
-const loadTileJSON = require('./load_tilejson');
-const normalizeURL = require('../util/mapbox').normalizeTileURL;
-const TileBounds = require('./tile_bounds');
-const ResourceType = require('../util/ajax').ResourceType;
-const browser = require('../util/browser');
+import { ResourceType } from 'mapbox-gl/src/util/ajax'
+import browser from 'mapbox-gl/src/util/browser'
 
-import type {Source} from './source';
-import type {OverscaledTileID} from './tile_id';
-import type Map from '../ui/map';
-import type Dispatcher from '../util/dispatcher';
-import type Tile from './tile';
-import type {Callback} from '../types/callback';
+import type { Source } from 'mapbox-gl/src/source/source'
+import type { OverscaledTileID } from 'mapbox-gl/src/source/tile_id'
+import type Map from 'mapbox-gl/src/ui/map'
+import type Dispatcher from 'mapbox-gl/src/util/dispatcher'
+import type Tile from 'mapbox-gl/src/source/tile'
+import type {Callback} from 'mapbox-gl/src/types/callback'
 
 class OfflineVectorTileSource extends Evented implements Source {
     type: 'offline-vector';
@@ -52,7 +52,7 @@ class OfflineVectorTileSource extends Evented implements Source {
         this.reparseOverscaled = true;
         this.isTileClipped = true;
 
-        util.extend(this, util.pick(options, ['url', 'scheme', 'tileSize']));
+        extend(this, util.pick(options, ['url', 'scheme', 'tileSize']));
         this._options = util.extend({ type: 'vector' }, options);
 
         this._collectResourceTiming = options.collectResourceTiming;
@@ -159,4 +159,4 @@ class OfflineVectorTileSource extends Evented implements Source {
     }
 }
 
-module.exports = OfflineVectorTileSource;
+export default OfflineVectorTileSource
