@@ -1,18 +1,24 @@
 import { getTiles } from './get_tiles'
 import { deletePack } from './delete_pack'
 import TileDownloadManager from './TileDownloadManager'
-import OfflineRasterTileSource from '../source/offline_raster_tile_source'
 import defaults from '../defaults'
 import { getArrayBuffer } from 'mapbox-gl/src/util/ajax'
 
+// Import our special offline sources
+import OfflineRasterTileSource from '../source/offline_raster_tile_source'
+import OfflineVectorTileSource from '../source/offline_vector_tile_source'
+import OfflineRasterDEMTileSource from '../source/offline_raster_dem_tile_source'
+
 class OfflineManager {
-  constructor(map, props, callback) {
+  constructor(map, accessToken, props, callback) {
     this.options = {
       dbname: props.dbname || defaults.dbname,
       dbversion: props.dbversion || defaults.dbverison,
       dbsize: props.dbsize || defaults.dbsize,
       debug: props.debug || defaults.debug
     }
+
+    this.accessToken = accessToken
 
     this.db = null
 
@@ -47,7 +53,11 @@ class OfflineManager {
   addSources(map, callback) {
     // Add the offline raster tile source
     map.addSourceType('offline-raster', OfflineRasterTileSource, () => {
-      callback()
+      map.addSourceType('offline-vector', OfflineVectorTileSource, () => {
+        map.addSourceType('offline-raster-dem', OfflineRasterDEMTileSource, () => {
+          callback()
+        })
+      })
     })
   }
 
@@ -198,6 +208,7 @@ class OfflineManager {
       }
     }
 
+    // If the source isn't specified as 'offline-' append it to the cached style
     let modifiedSources = {}
     Object.keys(params.style.sources).forEach(source => {
       modifiedSources[source] = params.style.sources[source]
@@ -207,7 +218,7 @@ class OfflineManager {
     params.style.sources = modifiedSources
 
     // Return a TileDownloadManager that has an abort method to cancel the creation of the cache
-    return new TileDownloadManager(this.db, params, progressCallback, errorCallback, done)
+  return new TileDownloadManager(this.db, this.accessToken, params, progressCallback, errorCallback, done)
   }
 
 }

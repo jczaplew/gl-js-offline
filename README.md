@@ -12,7 +12,7 @@ in modern browsers.
 
 + Not a fork of Mapbox GL JS  
 
-+ Cordova/Ionic friendly 
++ Cordova/Ionic friendly
 
 __IMPORTANT:__ you are responsible for following the terms of service associated
 with the tile providers you are caching. If you are caching Mapbox tiles please
@@ -28,9 +28,10 @@ Usage goes here
 
 ## API
 
-### OfflineManager(map, props, callback)
+### OfflineManager(map, accessToken, props, callback)
 Class for managing offline map caches. Also sets up special source types   
 + `map` - an instance of a Mapbox GL JS map
++ `accessToken` - a valid Mapbox access token. Used for authenticating tile requests
 + `props` - database configuration object for IndexedDB
   + `dbname` - *optional, default `tile-cache`* - name of the database
   + `dbversion` - *optional, default `1.0`* - version of the database
